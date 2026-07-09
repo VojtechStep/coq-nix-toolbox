@@ -11,7 +11,8 @@ let
     in
       mapAttrs (x: _: self.callPackage (path + "/${x}") {}) overlays;
   do-override = pkg: cfg:
-    let pkg' = if cfg?override
+    let pkg' = if cfg?replace then cfg.replace else
+        if cfg?override
         then pkg.override or (x: pkg) cfg.override else pkg; in
       if cfg?overrideAttrs
       then pkg'.overrideAttrs cfg.overrideAttrs else pkg';
