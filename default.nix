@@ -64,9 +64,9 @@ with initial.lib; let
       + optionalString print-env "\nprintNixEnv; exit"
       + optionalString update-nixpkgs "\nupdateNixpkgsUnstable; exit"
       + optionalString ci-matrix "\nnixBundles; exit";
-  jsonBundles = toJSON (attrNames setup.bundles);
-  jsonBundleSet = toJSON setup.bundles;
-  jsonBundle = toJSON selected-instance.bundle;
+  # jsonBundles = toJSON (attrNames setup.bundles);
+  # jsonBundleSet = toJSON setup.bundles;
+  # jsonBundle = toJSON selected-instance.bundle;
   coq-lsp = if selected-instance.pkgs.coqPackages?coq-lsp then
      [ selected-instance.pkgs.coqPackages.coq-lsp ] else [];
   vscoq = if selected-instance.pkgs.coqPackages?vscoq-language-server then
@@ -75,11 +75,11 @@ with initial.lib; let
     (epkgs: with epkgs.melpaPackages; [ proof-general ]);
   emacsInit = ./emacs-init.el;
 
-  jsonSetupConfig = toJSON setup.config;
+  # jsonSetupConfig = toJSON setup.config;
 
   ciByBundle = flip mapAttrs setup.instances (_: v:
     mapAttrs (_: x: map (x: x.name) x) v.ci.set);
-  jsonCIbyBundle = toJSON ciByBundle;
+  # jsonCIbyBundle = toJSON ciByBundle;
 
   ciByJob =
     let
@@ -89,14 +89,15 @@ with initial.lib; let
     in
       flip mapAttrs (push-list jobs-list)
         (jn: jv: mapAttrs (_: flatten) (push-list jv));
-  jsonCIbyJob = toJSON ciByJob;
+  # jsonCIbyJob = toJSON ciByJob;
 
   mkDeriv = shell:
   if !inNixShell then shell
   else with selected-instance; shell.overrideAttrs (old: {
     inherit (setup.config) nixpkgs coqproject;
-    inherit jsonBundle jsonBundles jsonSetupConfig jsonCIbyBundle jsonBundleSet
-            jsonCIbyJob shellHook toolboxDir selectedBundle
+    inherit # jsonBundle jsonBundles jsonSetupConfig jsonCIbyBundle jsonBundleSet
+            # jsonCIbyJob
+      shellHook toolboxDir selectedBundle
             jsonPkgsDeps jsonPkgsRevDeps jsonActionFile;
 
     bundles = attrNames setup.bundles;
